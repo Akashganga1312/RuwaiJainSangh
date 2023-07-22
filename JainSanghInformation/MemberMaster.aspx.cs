@@ -90,20 +90,7 @@ namespace JainSanghInformation
                 if (HttpUtility.HtmlDecode(row.Cells[13].Text).Trim() != "")
                 {
                     ddlbloodgrup.SelectedValue = HttpUtility.HtmlDecode(row.Cells[13].Text);
-                }
-
-                // int rowIndex = Convert.ToInt32(e.CommandArgument);
-
-                //Reference the GridView Row.
-                // GridViewRow row = GridView2.Rows[rowIndex];
-
-                // txtid.Text = (row.FindControl("Id") as ).Text;
-                // txtcode.Text = (row.FindControl("SocietyCode") as Label).Text;
-                //txtcname.Text = (row.FindControl("SocietyName") as Label).Text;
-                //txtsender1.Text = (row.FindControl("SenderId") as Label).Text;
-                //txtkey1.Text = (row.FindControl("SenderKey") as Label).Text;
-                //txtdlt1.Text = (row.FindControl("DLTId") as Label).Text;
-                //txttemplate1.Text = (row.FindControl("Template") as Label).Text;
+                } 
 
                 Popup(true);
             }
