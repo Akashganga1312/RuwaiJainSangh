@@ -6,7 +6,7 @@ using System.Linq;
 using System.Web;
 using System.Configuration;
 
-namespace CBT.Utilities
+namespace JainSanghInformation.Utilities
 {
     public class GridViewHelper
     {

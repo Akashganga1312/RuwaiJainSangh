@@ -4,15 +4,17 @@
 
 <html lang="en">
 <head runat="server">
- <title>JainSangh</title>
-     <asp:ContentPlaceHolder ID="head" runat="server">
+    <title>JainSangh</title>
+    <asp:ContentPlaceHolder ID="head" runat="server">
     </asp:ContentPlaceHolder>
-    
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="assets/vendors/mdi/css/materialdesignicons.min.css">
     <link rel="stylesheet" href="assets/vendors/css/vendor.bundle.base.css">
     <link rel="stylesheet" href="assets/css/style.css">
+        <link href="https://fonts.googleapis.com/css2?family=Rasa:wght@600&display=swap" rel="stylesheet">
+
     <script src="assets/vendors/js/vendor.bundle.base.js"></script>
     <style>
         a:focus, input:focus {
@@ -22,169 +24,187 @@
         .form-control, select.form-control {
             border: 1px solid #ebedf2;
         }
-        .sidebar .nav .nav-item .nav-link .menu-title ,.sidebar .nav.sub-menu .nav-item .nav-link
-        {
-            font-size:16px;
+
+        .sidebar .nav .nav-item .nav-link .menu-title, .sidebar .nav.sub-menu .nav-item .nav-link {
+            font-size: 16px;
         }
     </style>
 </head>
 
 
- <body>
-        <asp:ContentPlaceHolder id="MainContent" runat="server">
- </asp:ContentPlaceHolder>
-<% if (UserType == 1)
-    { %>
-<div class="container-scroller">
-    <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
-        <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center ">
-            <a class="navbar-brand brand-logo " href="DashboardMain.aspx" style="color: #4e73df; font-weight: bold;">JSI
-            </a>
-            <a class="navbar-brand brand-logo-mini " href="PartyMaster.aspx" style="color: #4e73df; font-weight: bold; font-size: small;">JSI
-            </a>
-          
-            <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center " type="button" data-toggle="offcanvas">
-                <span class="mdi mdi-menu"></span>
-            </button>
-        </div>
-    
-<% } %>
+<body>
+    <asp:ContentPlaceHolder ID="MainContent" runat="server">
+    </asp:ContentPlaceHolder>
+    <% if (UserType == 1)
+        { %>
+    <div class="container-scroller">
+        <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+            <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center ">
 
 
-<% else if (UserType == 2)
-    { %>
-<div class="container-scroller">
-    <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
-        <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center ">
-            <a class="navbar-brand brand-logo " href="DashboardUser.aspx" style="color: #4e73df; font-weight: bold;">JSI
-            </a>
-            <a class="navbar-brand brand-logo-mini " href="DashboardUser.aspx" style="color: #4e73df; font-weight: bold; font-size: small;">JSI</a>
-            <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center " type="button" data-toggle="offcanvas">
-                <span class="mdi mdi-menu"></span>
-            </button>
-        </div>
-        <% } %>
-
-        <div class="navbar-menu-wrapper d-flex align-items-stretch">
-            <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
-                <span class="mdi mdi-menu"></span>
-            </button>
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item dropdown no-arrow">
-                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-target="#collapseUtilities" controls="collapseUtilities">
-                        <i class="mdi mdi-account text-primary mdi-36px"></i>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right navbar-dropdown collapse" aria-labelledby="UserDropdown" data-bs-id="collapseUtilities">
-                        <div class="dropdown-header text-center">
-                            <p class="fw-light text-muted mb-1">UserName: <% =UserId %></p>
-                        </div>
-
-                        <a class="dropdown-item" href="resetPassword.aspx">
-                            <i class="mdi mdi-cached mr-2 text-danger"></i>
-                            Change Password
-                        </a>
-                        <a class="dropdown-item" onclick="noBack()" href="LogIn.aspx">
-                            <i class="mdi mdi-logout mr-2 text-primary"></i>
-                            Logout
-                        </a>
-                    </div>
-                </li>
-            </ul>
-        </div>
-    </nav>
-
-    <div class="container-fluid page-body-wrapper">
-        <nav class="sidebar sidebar-offcanvas" id="sidebar">
-            <ul class="nav">
-                <% if (UserType == 1)
-                    { %>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="DashboardMain.aspx">
-                        <span class="menu-title">Dashboard</span>
-                        <i class="mdi mdi-home menu-icon"></i>
-                    </a>
-                </li>
-
-                <% } %>
-
-                <% else if (UserType == 2)
-                    { %>
-                <li class="nav-item">
-                    <a class="nav-link" href="DashboardUser.aspx">
-                        <span class="menu-title">Dashboard</span>
-                        <i class="mdi mdi-home menu-icon"></i>
-                    </a>
-                </li>
-
-                <% } %>
-
-                <% if (UserType == 1)
-                    { %>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
-                        <span class="menu-title">JSI Masters</span>
-                        <i class="menu-arrow"></i>
-                        <i class="mdi mdi-store menu-icon"></i>
-                    </a>
-                    <div class="collapse" id="ui-basic">
-                        <ul class="nav flex-column sub-menu">
-                            <%--<li class="nav-item"><a class="nav-link" href="SocietyMasterIndex.aspx">Society List</a></li>--%>
-                            <li class="nav-item"><a class="nav-link" href="SanghMaster.aspx">SanghMaster</a></li>
-                            <li class="nav-item"><a class="nav-link" href="MemberMaster.aspx">MemberMaster</a></li>
-                          
-                        </ul>
-                    </div>
-                </li>
-            
-
-                <% } %>
-                <% else if (UserType == 0)
-                    { %>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="collapse" href="#union" aria-expanded="false" aria-controls="union">
-                        <span class="menu-title">Master</span>
-                        <i class="menu-arrow"></i>
-                        <i class="mdi mdi-memory menu-icon"></i>
-                    </a>
-                    <div class="collapse" id="union">
-                        <ul class="nav flex-column sub-menu">
-                            <li class="nav-item"><a class="nav-link" href="PartyMaster.aspx">PartyMaster</a></li>
-                            
-                        </ul>
-                    </div>
-                </li>
-                <% } %>
-            </ul>
-        </nav>
-        <!-- partial -->
-        <div class="main-panel">
-            <div class="content-wrapper">
-                <form id="form" runat="server">
-                    <div>
-                        <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
-                        </asp:ContentPlaceHolder>
-                    </div>
-                </form>
+                <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center " type="button" data-toggle="offcanvas">
+                    <span class="mdi mdi-menu"></span>
+                </button>
             </div>
-            <footer class="footer">
-                <div class="d-sm-flex justify-content-center justify-content-sm-between" style="justify-content: center !important;">
-                    <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright©
+
+            <% } %>
+
+
+            <% else if (UserType == 2)
+                { %>
+            <div class="container-scroller">
+                <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+                    <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center ">
+                        <a class="navbar-brand brand-logo " href="DashboardUser.aspx" style="color: #4e73df; font-weight: bold;">JSI
+                        </a>
+
+                        <a class="navbar-brand brand-logo-mini " href="DashboardUser.aspx" style="color: #4e73df; font-weight: bold; font-size: small;">JSI</a>
+
+                        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center " type="button" data-toggle="offcanvas">
+                            <span class="mdi mdi-menu"></span>
+                        </button>
+
+                    </div>
+                    <% } %>
+
+                    <div class="navbar-menu-wrapper d-flex align-items-stretch">
+                        <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+                            <span class="mdi mdi-menu"></span>
+                        </button>
+                        <center>
+                            <img src="assets/images/sangh.png" style="height: auto; width: 38%;" />
+                        </center>
+                        <center>
+                        <h4 class="menu-title my-3 text-center" style="font-size: 30px; font-family: 'Rasa', serif !important;">શ્રી ભરૂચ જિલ્લા લાડુઆ/લાડ શ્રીમાળી જૈન સંઘ
+                            </h4>
+                            </center>
+
+
+                        <ul class="navbar-nav ml-auto">
+                            <li class="nav-item dropdown no-arrow">
+                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-target="#collapseUtilities" controls="collapseUtilities">
+                                    <i class="mdi mdi-account text-primary mdi-36px"></i>
+                                </a>
+
+                                <div class="dropdown-menu dropdown-menu-right navbar-dropdown collapse" aria-labelledby="UserDropdown" data-bs-id="collapseUtilities">
+                                    <div class="dropdown-header text-center">
+                                        <p class="fw-light text-muted mb-1">UserName: <% =UserId %></p>
+                                    </div>
+
+                                    <a class="dropdown-item" href="resetPassword.aspx">
+                                        <i class="mdi mdi-cached mr-2 text-danger"></i>
+                                        Change Password
+                                    </a>
+                                    <a class="dropdown-item" onclick="noBack()" href="LogIn.aspx">
+                                        <i class="mdi mdi-logout mr-2 text-primary"></i>
+                                        Logout
+                                    </a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+
+                <div class="container-fluid page-body-wrapper">
+                    <nav class="sidebar sidebar-offcanvas" id="sidebar">
+                        <ul class="nav">
+                            <% if (UserType == 1)
+                                { %>
+
+                            <li class="nav-item">
+                                <a class="navbar-brand brand-logo " href="DashboardMain.aspx" style="color: #4e73df; font-weight: bold;"></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="DashboardMain.aspx">
+                                    <span class="menu-title">Dashboard</span>
+                                    <i class="mdi mdi-home menu-icon"></i>
+                                </a>
+                            </li>
+
+                            <% } %>
+
+                            <% else if (UserType == 2)
+                                { %>
+                            <li class="nav-item">
+                                <a class="nav-link" href="DashboardUser.aspx">
+                                    <span class="menu-title">Dashboard</span>
+                                    <i class="mdi mdi-home menu-icon"></i>
+                                </a>
+                            </li>
+                            <% } %>
+
+                            <% if (UserType == 1)
+                                { %>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+                                    <span class="menu-title">JSI Masters</span>
+
+                                    <i class="menu-arrow"></i>
+                                    <i class="mdi mdi-store menu-icon"></i>
+
+                                </a>
+
+                                <div class="collapse" id="ui-basic">
+                                    <ul class="nav flex-column sub-menu">
+                                        <%--<li class="nav-item"><a class="nav-link" href="SocietyMasterIndex.aspx">Society List</a></li>--%>
+                                        <li class="nav-item"><a class="nav-link" href="SanghMaster.aspx">SanghMaster</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="MemberMaster.aspx">MemberMaster</a></li>
+
+                                    </ul>
+                                </div>
+                            </li>
+
+
+                            <% } %>
+                            <% else if (UserType == 0)
+                                { %>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="collapse" href="#union" aria-expanded="false" aria-controls="union">
+                                    <span class="menu-title">Master</span>
+                                    <i class="menu-arrow"></i>
+                                    <i class="mdi mdi-memory menu-icon"></i>
+
+                                </a>
+
+                                <div class="collapse" id="union">
+                                    <ul class="nav flex-column sub-menu">
+                                        <li class="nav-item"><a class="nav-link" href="PartyMaster.aspx">PartyMaster</a></li>
+
+                                    </ul>
+                                </div>
+
+                            </li>
+                            <% } %>
+                        </ul>
+                    </nav>
+                    <!-- partial -->
+                    <div class="main-panel">
+                        <div class="content-wrapper">
+                            <form id="form" runat="server">
+                                <div>
+                                    <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+                                    </asp:ContentPlaceHolder>
+                                </div>
+                            </form>
+                        </div>
+                        <footer class="footer">
+                            <div class="d-sm-flex justify-content-center justify-content-sm-between" style="justify-content: center !important;">
+                                <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright©
                             <script type="text/javascript">document.write(new Date().getFullYear());</script>
-                        <a href="http://akashganga.in/" target="_blank">CIBT</a>. All rights reserved.</span>
+                                    <a href="http://akashganga.in/" target="_blank">Jain Sangh</a>. All rights reserved.</span>
+                            </div>
+                        </footer>
+                    </div>
                 </div>
-            </footer>
-        </div>
-    </div>
-</div>
-<script src="assets/vendors/chart.js/Chart.min.js"></script>
-<script src="assets/js/off-canvas.js"></script>
-<script src="assets/js/hoverable-collapse.js"></script>
-<script src="assets/js/misc.js"></script>
-<script src="assets/js/todolist.js"></script>
-<script type="text/javascript">
-    window.history.forward();
-    function noBack() { window.history.forward(); }
-</script>
+            </div>
+            <script src="assets/vendors/chart.js/Chart.min.js"></script>
+            <script src="assets/js/off-canvas.js"></script>
+            <script src="assets/js/hoverable-collapse.js"></script>
+            <script src="assets/js/misc.js"></script>
+            <script src="assets/js/todolist.js"></script>
+            <script type="text/javascript">
+                window.history.forward();
+                function noBack() { window.history.forward(); }
+            </script>
 </body>
 </html>

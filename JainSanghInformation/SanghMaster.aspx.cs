@@ -111,8 +111,6 @@ namespace JainSanghInformation
             {
                 return "delete operation not performed";
             }
-
-
         }
         void Popup(bool isDisplay)
         {

@@ -151,7 +151,7 @@
                 <div class="card">
                     <div class="card-body">
                         <div style="width: 100%;">
-                            <asp:GridView ID="GridView2" runat="server" DataKeyNames="Id" class="table table-bordered" OnRowCommand="GridViewData_RowCommand" Style="width: 100% !important;">
+                            <asp:GridView ID="GridView2" runat="server" DataKeyNames="AutoId" class="table table-bordered" OnRowCommand="GridViewData_RowCommand" Style="width: 100% !important;">
                                 <Columns>
                                     <asp:TemplateField HeaderText="Actions">
                                         <ItemTemplate>
@@ -159,7 +159,7 @@
                                     <asp:LinkButton Text="Delete" runat="server" CssClass="Delete" />--%>
                                             <asp:LinkButton Text="Edit" runat="server" CssClass="Edit" CommandName="ShowPopup" CommandArgument="<%# Container.DataItemIndex %>" />
                                             |
-                                            <asp:LinkButton Text="Delete" runat="server" CssClass="Delete" />
+                                             <asp:LinkButton Text="Delete" runat="server" CssClass="Delete" OnClientClick='<%# "confirmDelete(\"" + Container.DataItemIndex + "\", \"" + Eval("AutoId") + "\"); return false;" %>' />
                                         </ItemTemplate>
                                     </asp:TemplateField>
                                 </Columns>
@@ -183,36 +183,37 @@
                 <div class="card-body">
                     <p class="card-description">Update Member Details</p>
                     <asp:Label ID="id" runat="server" Style="display: none"></asp:Label>
-                    <div class="row">
+                    <div class="form-group row">
                         <div class="col-md-4">
                             <div class="form-group row">
-                                <label class="col-sm-3 col-form-label">Sangh Name</label>
+                                <label class="col-sm-3 col-form-label">Select Sangh<label style="color: red;">*</label></label>
                                 <div class="col-sm-7">
-                                    <asp:Label ID="textBoxSanghName" runat="server" class="form-control" readonly="true"></asp:Label>
+                                    <asp:DropDownList ID="ddlsangh" CssClass="form-control" autocompletemode="Suggest" runat="server" required="required"></asp:DropDownList>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-4" runat="server">
                             <div class="form-group row">
-                                <label class="col-sm-3 col-form-label">Village Name</label>
+                                <label class="col-sm-3 col-form-label">Member Type<label style="color: red;">*</label></label>
                                 <div class="col-sm-7">
-                                    <asp:TextBox type="text" ID="txtvillagename" runat="server" class="form-control" placeholder="Enter Village Name" autocomplete="off"></asp:TextBox>
+                                    <asp:DropDownList ID="DropDownListMemberType" CssClass="form-control" autocompletemode="Suggest" onchange="handleDropDownChange();" runat="server" required="required"></asp:DropDownList>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-4" id="divForMemberNameOfParent" runat="server">
                             <div class="form-group row">
-                                <label class="col-sm-3 col-form-label">Member Name</label>
+                                <label class="col-sm-3 col-form-label">Parent Member Name<label style="color: red;">*</label></label>
                                 <div class="col-sm-7">
-                                    <asp:TextBox type="text" ID="txtmembername" runat="server" class="form-control" placeholder="Enter Member Name" autocomplete="off"></asp:TextBox>
+                                    <asp:DropDownList ID="DropDownListParentMember" CssClass="form-control" autocompletemode="Suggest" runat="server" required="required"></asp:DropDownList>
                                 </div>
                             </div>
                         </div>
+
                         <div class="col-md-4">
                             <div class="form-group row">
-                                <label class="col-sm-3 col-form-label">Member Type</label>
+                                <label class="col-sm-3 col-form-label">Member Name<label style="color: red;">*</label></label>
                                 <div class="col-sm-7">
-                                    <asp:TextBox type="text" ID="txtmtype" runat="server" class="form-control" placeholder="Enter Member Name" autocomplete="off"></asp:TextBox>
+                                    <asp:TextBox type="text" ID="txtmembername" runat="server" class="form-control" placeholder="Enter Member Name" autocomplete="off" required="required"></asp:TextBox>
                                 </div>
                             </div>
                         </div>
@@ -244,7 +245,15 @@
                             <div class="form-group row">
                                 <label class="col-sm-3 col-form-label">Occupation</label>
                                 <div class="col-sm-7">
-                                    <asp:TextBox type="text" ID="txtoccupation" runat="server" class="form-control" placeholder="Enter Member Name" autocomplete="off"></asp:TextBox>
+                                    <asp:TextBox type="text" ID="txtoccupation" runat="server" class="form-control" placeholder="Enter Occupation" autocomplete="off"></asp:TextBox>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Village Name</label>
+                                <div class="col-sm-7">
+                                    <asp:TextBox type="text" ID="txtvillagename" runat="server" class="form-control" placeholder="Enter Village Name" autocomplete="off"></asp:TextBox>
                                 </div>
                             </div>
                         </div>
@@ -257,27 +266,27 @@
                             </div>
                         </div>
                         <div class="col-md-4">
-                                        <div class="form-group row">
-                                            <label class="col-sm-3 col-form-label">Mobile Number(Primary)</label>
-                                            <div class="col-sm-7">
-                                                <asp:TextBox type="text" ID="textBoxMobileNumber1" runat="server" class="form-control" placeholder="Enter 10digit MobileNo" MaxLength="10" max="10" onkeypress="return numeric(event)" autocomplete="off"></asp:TextBox>
-                                            </div>
-                                        </div>
-                                    </div>
-                                     <div class="col-md-4">
-                                        <div class="form-group row">
-                                            <label class="col-sm-3 col-form-label">Mobile Number(Secondary)</label>
-                                            <div class="col-sm-7">
-                                                <asp:TextBox type="text" ID="textBoxMobileNumber2" runat="server" class="form-control" placeholder="Enter 10digit MobileNo" MaxLength="10" max="10" onkeypress="return numeric(event)" autocomplete="off"></asp:TextBox>
-                                            </div>
-                                        </div>
-                                    </div>
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Mobile Number(Primary)</label>
+                                <div class="col-sm-7">
+                                    <asp:TextBox type="text" ID="textBoxMobileNumber1" runat="server" class="form-control" placeholder="Enter 10digit MobileNo" MaxLength="10" max="10" onkeypress="return numeric(event)" autocomplete="off"></asp:TextBox>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Mobile Number(Secondary)</label>
+                                <div class="col-sm-7">
+                                    <asp:TextBox type="text" ID="textBoxMobileNumber2" runat="server" class="form-control" placeholder="Enter 10digit MobileNo" MaxLength="10" max="10" onkeypress="return numeric(event)" autocomplete="off"></asp:TextBox>
+                                </div>
+                            </div>
+                        </div>
                         <div class="col-md-4">
                             <div class="form-group row">
                                 <label class="col-sm-3 col-form-label">BloodGroup</label>
                                 <div class="col-sm-7">
                                     <asp:DropDownList ID="ddlbloodgrup" runat="server" class="form-control">
-                                        <asp:ListItem Text="--Please Select--"></asp:ListItem>
+                                        <asp:ListItem Text="--Please select--"></asp:ListItem>
                                         <asp:ListItem Text="A+"></asp:ListItem>
                                         <asp:ListItem Text="A-"></asp:ListItem>
                                         <asp:ListItem Text="B+"></asp:ListItem>
@@ -290,8 +299,6 @@
                                 </div>
                             </div>
                         </div>
-
-
                     </div>
                     <div class="form-group col-md-12">
                         <div class="col-md-offset-2 col-md-12" align="center">
@@ -349,6 +356,9 @@
             return true;
         });
 
+
+
+
         //$("#btnClose").live('click', function () {
         //    HidePopup();
         //});
@@ -356,29 +366,52 @@
 
 
     <script type="text/javascript">  
-        $(function () {
-            //$("[id*=GridView2]").DataTable(
-            //    {
-            //        bLengthChange: true,
-            //        lengthMenu: [[10, -1], [10, "All"]],
-            //        bFilter: true,
-            //        bSort: true,
-            //        bPaginate: true,
-            //        scroll: true,
-            //        scrollX: true,
-            //        scrollY: true,
-            //        dom: 'Bfrtip',
-            //        //buttons: [
-            //        //    'excel', 'pdf'
-            //        //]
-            //        buttons: [
-            //            'excel'
-            //        ],
+        function handleDropDownChange() {
+            // Get the selected value from the DropDownList
+            var selectedValue = $('#<%= DropDownListMemberType.ClientID %> option:selected').text();
+            debugger;
+            // Get the reference to the div you want to show/hide
+            var divForMemberNameOfParent = $("#<%= divForMemberNameOfParent.ClientID %>");
 
-            //    });
+
+            // Perform actions based on the selected value
+            if (selectedValue === "Self") {
+                // Show the div when "Husband" is selected
+                divForMemberNameOfParent.hide();
+            } else {
+                // Hide the div for other selections
+                divForMemberNameOfParent.show();
+            }
+        }
+        function confirmDelete(rowIndex, autoId) {
+            // Show the confirmation dialog using the browser's built-in function
+            if (confirm("Are you sure you want to delete this record?")) {
+                // If the user confirms, proceed with the delete operation
+                // Get the AutoId from data-key attribute
+
+                // Perform the Ajax update (delete operation)
+                $.ajax({
+                    type: "POST",
+                    url: "MemberMaster.aspx/DeleteRecord", // Replace with the actual server page URL that handles the delete operation
+                    data: "{ autoId: '" + autoId + "' }", // Pass the AutoId as a parameter to the server-side method
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        alert(response.d);
+                        location.reload();
+                        // Handle the response if needed
+                        // For example, you can reload the GridView to reflect the updated data
+                        // location.reload(); // Reload the page or use other methods to refresh the GridView
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        // Handle the error if needed
+                    }
+                });
+            }
+        }
+        $(function () {
             phyReport();
         });
-
 
     </script>
 

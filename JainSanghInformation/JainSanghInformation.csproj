@@ -153,6 +153,7 @@
     <Content Include="assets\images\favicon.png" />
     <Content Include="assets\images\logo-mini.svg" />
     <Content Include="assets\images\logo.svg" />
+    <Content Include="assets\images\sangh.png" />
     <Content Include="assets\images\sprites\blue.png" />
     <Content Include="assets\images\sprites\dark.png" />
     <Content Include="assets\images\sprites\flag.png" />
@@ -197,6 +198,8 @@
     <Content Include="Content\Site.css" />
     <Content Include="CreateNewMember.aspx" />
     <Content Include="CreateNewSangh.aspx" />
+    <Content Include="DashboardUser.aspx" />
+    <Content Include="DashboardMain.aspx" />
     <Content Include="Default.aspx" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
@@ -361,6 +364,20 @@
     <Compile Include="CreateNewSangh.aspx.designer.cs">
       <DependentUpon>CreateNewSangh.aspx</DependentUpon>
     </Compile>
+    <Compile Include="DashboardUser.aspx.cs">
+      <DependentUpon>DashboardUser.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="DashboardUser.aspx.designer.cs">
+      <DependentUpon>DashboardUser.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="DashboardMain.aspx.cs">
+      <DependentUpon>DashboardMain.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="DashboardMain.aspx.designer.cs">
+      <DependentUpon>DashboardMain.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -421,6 +438,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Uploads\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

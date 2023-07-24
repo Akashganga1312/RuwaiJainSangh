@@ -64,11 +64,11 @@ namespace JainSanghInformation
                             Session.Add("usrid", UserId);
                             if (Session["usertype"].ToString() == "1")
                             {
-                                Response.Redirect("SanghMaster.aspx");
+                                Response.Redirect("Default.aspx");
                             }
                             if (Session["usertype"].ToString() == "2")
                             {
-                                Response.Redirect("SanghMaster.aspx");
+                                Response.Redirect("Default.aspx");
                             }
                         }
 

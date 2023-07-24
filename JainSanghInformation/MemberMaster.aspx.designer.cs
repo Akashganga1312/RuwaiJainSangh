@@ -42,22 +42,40 @@ namespace JainSanghInformation
         protected global::System.Web.UI.WebControls.Label id;
 
         /// <summary>
-        /// textBoxSanghName control.
+        /// ddlsangh control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label textBoxSanghName;
+        protected global::System.Web.UI.WebControls.DropDownList ddlsangh;
 
         /// <summary>
-        /// txtvillagename control.
+        /// DropDownListMemberType control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtvillagename;
+        protected global::System.Web.UI.WebControls.DropDownList DropDownListMemberType;
+
+        /// <summary>
+        /// divForMemberNameOfParent control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divForMemberNameOfParent;
+
+        /// <summary>
+        /// DropDownListParentMember control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList DropDownListParentMember;
 
         /// <summary>
         /// txtmembername control.
@@ -67,15 +85,6 @@ namespace JainSanghInformation
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtmembername;
-
-        /// <summary>
-        /// txtmtype control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtmtype;
 
         /// <summary>
         /// txtbdate control.
@@ -112,6 +121,15 @@ namespace JainSanghInformation
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtoccupation;
+
+        /// <summary>
+        /// txtvillagename control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtvillagename;
 
         /// <summary>
         /// txtaddress control.

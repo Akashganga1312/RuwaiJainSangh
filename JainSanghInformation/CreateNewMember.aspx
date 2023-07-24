@@ -29,7 +29,7 @@
                     <asp:FileUpload ID="filupl" runat="server" accept=".xlsx"/>
                         </div>
                     <div class="column">
-                    <asp:Button ID="btnupload" runat="server" Text="Upload" Class="btn btn-lg btn-primary  font font-weight-medium auth-form-btn" OnClick="btnupload_Click" />
+                    <asp:Button ID="btnupload" runat="server" Text="Upload" Class="btn btn-lg btn-primary  font font-weight-medium auth-form-btn" OnClick="btnupload_Click" UseSubmitBehavior="false" />
                         </div>
                 </div>
         </div>
@@ -47,7 +47,7 @@
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group row">
-                                            <label class="col-sm-3 col-form-label">Select Sangh<sup style="color:red;">*</sup></label>
+                                            <label class="col-sm-3 col-form-label">Select Sangh<label style="color:red;">*</label></label>
                                             <div class="col-sm-7">
                                                 <asp:DropDownList ID="ddlsangh"  CssClass="form-control" autocompletemode="Suggest" runat="server" required="required"></asp:DropDownList>
                                             </div>
@@ -55,25 +55,26 @@
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group row">
-                                            <label class="col-sm-3 col-form-label">Village Name</label>
+                                            <label class="col-sm-3 col-form-label">Member Type<label style="color:red;">*</label></label>
                                             <div class="col-sm-7">
-                                                <asp:TextBox type="text" ID="txtvillagename" runat="server" class="form-control" placeholder="Enter Village Name" autocomplete="off"></asp:TextBox>
+                                                <asp:DropDownList ID="DropDownListMemberType"  CssClass="form-control" autocompletemode="Suggest" runat="server" required="required" onchange="handleDropDownChange(this);"></asp:DropDownList>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                     <div class="col-md-4" id="divForMemberNameOfParent">
                                         <div class="form-group row">
-                                            <label class="col-sm-3 col-form-label">Member Name<sup style="color:red;">*</sup></label>
+                                            <label class="col-sm-3 col-form-label">Parent Member Name<label style="color:red;">*</label></label>
                                             <div class="col-sm-7">
-                                                <asp:TextBox type="text" ID="txtmembername" runat="server" class="form-control" placeholder="Enter Member Type" autocomplete="off" required="required"></asp:TextBox>
+                                                <asp:DropDownList ID="DropDownListParentMember"  CssClass="form-control" autocompletemode="Suggest" runat="server" required="required"></asp:DropDownList>
                                             </div>
                                         </div>
                                     </div>
+                                   
                                     <div class="col-md-4">
                                         <div class="form-group row">
-                                            <label class="col-sm-3 col-form-label">Member Type</label>
+                                            <label class="col-sm-3 col-form-label">Member Name<label style="color:red;">*</label></label>
                                             <div class="col-sm-7">
-                                                <asp:TextBox type="text" ID="txtmtype" runat="server" class="form-control" placeholder="Enter Member Name" autocomplete="off"></asp:TextBox>
+                                                <asp:TextBox type="text" ID="txtmembername" runat="server" class="form-control" placeholder="Enter Member Name" autocomplete="off" required="required"></asp:TextBox>
                                             </div>
                                         </div>
                                     </div>
@@ -106,6 +107,14 @@
                                             <label class="col-sm-3 col-form-label">Occupation</label>
                                             <div class="col-sm-7">
                                                 <asp:TextBox type="text" ID="txtoccupation" runat="server" class="form-control" placeholder="Enter Occupation" autocomplete="off"></asp:TextBox>
+                                            </div>
+                                        </div>
+                                    </div>
+                                     <div class="col-md-4">
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">Village Name</label>
+                                            <div class="col-sm-7">
+                                                <asp:TextBox type="text" ID="txtvillagename" runat="server" class="form-control" placeholder="Enter Village Name" autocomplete="off"></asp:TextBox>
                                             </div>
                                         </div>
                                     </div>
@@ -174,5 +183,25 @@
                 return false;
             }
         }
+        function handleDropDownChange(dropDownList) {
+            var selectedValue = dropDownList.value;
+
+            // Hide all divs
+            $("#divForMemberNameOfParent").hide();
+
+            // Show the selected div based on the selected value
+            if (selectedValue === "0") {
+                $("#divForMemberNameOfParent").hide();
+            } else if (selectedValue === "1") {
+                $("#divForMemberNameOfParent").hide();
+            } else {
+                $("#divForMemberNameOfParent").show();
+            }
+        }
+    </script>
+    
+    <script type="text/javascript">
+        $(document).ready(function () {            $("#divForMemberNameOfParent").hide();
+        });
     </script>
 </asp:Content>

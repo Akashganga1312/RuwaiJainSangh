@@ -1,4 +1,5 @@
 ﻿using ExcelDataReader;
+using JainSanghInformation.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -24,6 +25,7 @@ namespace JainSanghInformation
         public string sanghname;
         public string VillageName;
         public string MemberName;
+        public string ParentMemberId;
         public string MemberType;
         public string Birthdate;
         public string Education;
@@ -44,10 +46,24 @@ namespace JainSanghInformation
             UserId = Session["usrid"].ToString();
             if (!this.IsPostBack)
             {
+                dropDownMemberType();
+                dropDownParentMemberName();
                 combobox();
             }
         }
 
+
+        private void dropDownMemberType()
+        {
+            // Call the method to populate the DropDownList
+            DropDownHelper.PopulateDropDownListFromStoredProcedure(DropDownListMemberType, DropDownHelper.spNameForMemberType, null);
+        }
+
+        private void dropDownParentMemberName()
+        {
+            // Call the method to populate the DropDownList
+            DropDownHelper.PopulateDropDownListFromStoredProcedure(DropDownListParentMember, DropDownHelper.spNameForParenMemberName, null);
+        }
         public void combobox()
         {
             using (SqlConnection con = new SqlConnection(connectionString))
@@ -79,13 +95,13 @@ namespace JainSanghInformation
                     {
                         command.CommandType = CommandType.StoredProcedure;
 
-                      
+
                         if (!method)
                         {
                             sanghname = ddlsangh.SelectedValue;
                             VillageName = txtvillagename.Text;
                             MemberName = txtmembername.Text;
-                            MemberType = txtmtype.Text;
+                            MemberType = DropDownListMemberType.SelectedItem.ToString();
                             Birthdate = txtbdate.Text;
                             Education = txteducation.Text;
                             MarriageStatus = txtmarriagestatus.Text;
@@ -94,12 +110,17 @@ namespace JainSanghInformation
                             MobileNumber1 = textBoxMobileNumber1.Text;
                             MobileNumber2 = textBoxMobileNumber2.Text;
                             BloodGroup = ddlbloodgrup.Text;
-                            if (BloodGroup.Contains("Select"))
+                            if (BloodGroup.Contains("--"))
                             {
                                 BloodGroup = string.Empty;
                             }
 
                         }
+                        if (!MemberType.Equals("Self"))
+                        {
+                            ParentMemberId = DropDownListParentMember.SelectedItem.ToString();
+                        }
+
 
                         command.Parameters.AddWithValue("@SanghName", sanghname);
                         command.Parameters.AddWithValue("@VillageName", VillageName);
@@ -114,11 +135,17 @@ namespace JainSanghInformation
                         command.Parameters.AddWithValue("@MobileNumber2", MobileNumber2);
                         command.Parameters.AddWithValue("@BloodGroup", BloodGroup);
                         command.Parameters.AddWithValue("@CreatedBy", UserType);
+                        if (ParentMemberId != null || ParentMemberId != "")
+                        {
+                            command.Parameters.AddWithValue("@MemberNameParent", ParentMemberId);
+                        }
 
                         connection.Open();
                         command.ExecuteNonQuery();
                         connection.Close();
                         Success++;
+                        ScriptManager.RegisterStartupScript(this, this.GetType(), "script", "alert('Successfully Inserted or Updated!');", true);
+                        clearAllField();
                     }
                 }
             }
@@ -127,7 +154,7 @@ namespace JainSanghInformation
                 Failed++;
                 //ScriptManager.RegisterStartupScript(this, this.GetType(), "script", "alert('Failed = " + Failed + "!')", true); //Successs Data
             }
-             
+
         }
 
         protected void btninsert_Click(object sender, EventArgs e)
@@ -135,7 +162,7 @@ namespace JainSanghInformation
             method = false;
             insetupdatedata();
             clearAllField();
-           
+
         }
 
         public void ClearTextBoxes(System.Web.UI.Control parent)
@@ -158,97 +185,115 @@ namespace JainSanghInformation
         protected void clearAllField()
         {
             ClearTextBoxes(this);
+            DropDownListMemberType.ClearSelection();
+            ddlbloodgrup.ClearSelection();
+            ddlsangh.ClearSelection();
         }
 
         protected void btnupload_Click(object sender, EventArgs e)
         {
             method = true;
-            ExcelRead();
-        }
-
-        public void ExcelRead()
-        {
-            try
+            if (filupl.HasFile)
             {
-                while (true)
+                if (filupl.HasFile && (Path.GetExtension(filupl.FileName) == ".xlsx" || Path.GetExtension(filupl.FileName) == ".xlx"))
                 {
-                    string file = Path.GetFileName(filupl.FileName);
-                    var path = Server.MapPath("~/uploadedexcel/" + file);
-                    SaveFile(filupl.PostedFile);
-                    var filePath = Path.Combine("C:\\Program Files\\IIS Express\\uploadedexcel", file);
-                    FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read);
-                    IExcelDataReader excelReader = ExcelReaderFactory.CreateOpenXmlReader(stream);
-                    
-                    DataSet result = excelReader.AsDataSet(new ExcelDataSetConfiguration()
-                    {
-                        ConfigureDataTable = (_) => new ExcelDataTableConfiguration()
-                        {
-                            UseHeaderRow = true
-                        }
-                    });
-                    DataTable dt = result.Tables[0];
-                    totalrows = dt.Rows.Count;
+                    string fileName = Path.GetFileName(filupl.FileName);
+                    string filePath = Server.MapPath("~/Uploads/") + fileName;
 
-                    
+                    // Save the uploaded Excel file to the server
+                    filupl.SaveAs(filePath);
 
-                    foreach (DataRow row in dt.Rows)
-                    {
-
-                        sanghname = row["SanghName"].ToString().Trim();
-                        VillageName = row["VillageName"].ToString().Trim();
-                        MemberName = row["MemberName"].ToString().Trim();
-                         MemberType = row["MemberType"].ToString().Trim();
-                         Birthdate = row["Birthdate"].ToString().Trim();
-                         Education = row["Education"].ToString().Trim();
-                         MarriageStatus = row["MarriageStatus"].ToString().Trim();
-                         Occupation = row["Occupation"].ToString().Trim();
-                         Address = row["Address"].ToString().Trim();
-                         MobileNumber1 = row["MobileNumber1"].ToString().Trim();
-                         MobileNumber2 = row["MobileNumber2"].ToString().Trim();
-                         BloodGroup = row["BloodGroup"].ToString().Trim();
-
-                        insetupdatedata();
-                       
-                    }
-                    stream.Close();
-                    break;
+                    InsertDataFromExcel(filePath);
 
                 }
-                
-            }
-          
-            catch
-            {
-                ScriptManager.RegisterStartupScript(this, this.GetType(), "script", "alert('Error Occured,Try Again');", true);
-            }
-            clearAllField();
-            ScriptManager.RegisterStartupScript(this, this.GetType(), "script", "alert('Total Success = " + Success + " & Failed = " + Failed + "')", true); //Successs Data
-
-        }
-
-       public void SaveFile(HttpPostedFile file)
-        {
-            string savePath = "c:\\temp\\uploads\\";
-            string fileName = filupl.FileName;
-            string pathToCheck = savePath + fileName;
-            string tempfileName = "";
-            if (System.IO.File.Exists(pathToCheck))
-            {
-                int counter = 2;
-                while (System.IO.File.Exists(pathToCheck))
-                {
-                    tempfileName = counter.ToString() + fileName;
-                    pathToCheck = savePath + tempfileName;
-                    counter++;
-                }
-
-                fileName = tempfileName;
             }
             else
             {
+
             }
-            savePath += fileName;
-            filupl.SaveAs(savePath);
+        }
+        private void InsertDataFromExcel(string filePath)
+        {
+            int insertRowOrAffectedRow = 0;
+            int failedRowOFinsertion = 0;
+            int totalrows = 0;
+            try
+            {
+                string file = filePath;
+                FileStream stream = System.IO.File.Open(file, FileMode.Open, FileAccess.Read);
+                IExcelDataReader excelReader = ExcelReaderFactory.CreateOpenXmlReader(stream);
+                DataSet result = excelReader.AsDataSet(new ExcelDataSetConfiguration()
+                {
+                    ConfigureDataTable = (_) => new ExcelDataTableConfiguration()
+                    {
+                        UseHeaderRow = true
+                    }
+                });
+                DataTable dt = result.Tables[0];
+                totalrows = dt.Rows.Count;
+                insertRowOrAffectedRow = 0;
+                failedRowOFinsertion = 0;
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    string sanghName = row["SanghName-SanghLocation*"].ToString().Trim();
+                    string memberType = row["MemberType*"].ToString().Trim();
+                    string parentMemberName = row["ParentMemberName*"].ToString().Trim();
+                    string memberName = row["MemberName*"].ToString().Trim();
+                    string birthdate = row["Birthdate"].ToString().Trim();
+                    if (birthdate != "")
+                    {
+                        birthdate = Convert.ToDateTime(birthdate).ToString("yyyy-MM-dd");
+                    }
+                    else {
+                        birthdate = "1900-01-01";
+                    }
+                    string education = row["Education"].ToString().Trim();
+                    string marriageStatus = row["MarriageStatus"].ToString().Trim();
+                    string occupation = row["Occupation"].ToString().Trim();
+                    string villageName = row["VillageName"].ToString().Trim();
+                    string address = row["Address"].ToString().Trim();
+                    string mobileNumberPrimary = row["MobileNumberPrimary"].ToString().Trim();
+                    string mobileNumberSecondary = row["MobileNumberSecondary"].ToString().Trim();
+                    string bloodGroup = row["BloodGroup"].ToString().Trim();
+
+                    SqlParameter[] parameters = new SqlParameter[]
+                         {
+                                  new SqlParameter("@SanghName",sanghName),
+    new SqlParameter("@VillageName", villageName),
+    new SqlParameter("@MemberName", memberName),
+    new SqlParameter("@MemberNameParent", parentMemberName),
+    new SqlParameter("@MemberType", memberType),
+    new SqlParameter("@Birthdate", birthdate),
+    new SqlParameter("@Education", education),
+    new SqlParameter("@MarriageStatus", marriageStatus),
+    new SqlParameter("@Occupation", occupation),
+    new SqlParameter("@Address", address),
+    new SqlParameter("@MobileNumber1", mobileNumberPrimary),
+    new SqlParameter("@MobileNumber2", mobileNumberSecondary),
+    new SqlParameter("@BloodGroup",bloodGroup ),
+    new SqlParameter("@CreatedBy", UserId)
+                         };
+                    if (DatabaseHelper.InsertDataInMemberMaster(parameters))
+                    {
+                        insertRowOrAffectedRow++;
+                        clearAllField();
+                    }
+                    else
+                    {
+                        failedRowOFinsertion++;
+                        ScriptManager.RegisterStartupScript(this, this.GetType(), "script", "alert('Failed Insertion of Record!');", true);
+                    }
+                }
+                excelReader.Dispose();
+            }
+            catch (Exception e)
+            {
+                failedRowOFinsertion ++;
+            }
+            var stringOfSuccess = "alert('" + "Total data = " + totalrows + " Successfully Affected or Inserted = " + insertRowOrAffectedRow + " Failed record of = " + failedRowOFinsertion + "');";
+            ScriptManager.RegisterStartupScript(this, this.GetType(), "script", stringOfSuccess, true);
+
 
         }
 
