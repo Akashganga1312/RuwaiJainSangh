@@ -39,8 +39,9 @@ namespace JainSanghInformation
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "script", "alert('Successfully Inserted!');", true);
                 clearAllField();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Library.WriteErrorLog("Insert of sangh Master Error = " + ex.ToString());
                 //MessageBox.Show("Insertion of record failed. Please try again");
             }
         }

@@ -16,15 +16,17 @@ namespace JainSanghInformation
         public string UserId = string.Empty;
         protected void Page_Load(object sender, EventArgs e)
         {
-            try { 
-            if (UserId == "")
+            try
             {
-                UserType = Convert.ToInt32(Session["usertype"].ToString());
-                UserId = Session["usrid"].ToString();
+                if (UserId == "")
+                {
+                    UserType = Convert.ToInt32(Session["usertype"].ToString());
+                    UserId = Session["usrid"].ToString();
+                }
             }
-            }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                Library.WriteErrorLog("Login or Session Error= " + ex.ToString());
                 logout(sender, e);
             }
 

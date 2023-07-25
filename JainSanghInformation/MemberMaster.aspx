@@ -251,9 +251,9 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group row">
-                                <label class="col-sm-3 col-form-label">Village Name</label>
+                                <label class="col-sm-3 col-form-label">Native Place</label>
                                 <div class="col-sm-7">
-                                    <asp:TextBox type="text" ID="txtvillagename" runat="server" class="form-control" placeholder="Enter Village Name" autocomplete="off"></asp:TextBox>
+                                    <asp:TextBox type="text" ID="txtvillagename" runat="server" class="form-control" placeholder="Enter Native Name" autocomplete="off"></asp:TextBox>
                                 </div>
                             </div>
                         </div>
@@ -440,7 +440,39 @@
                 select: true,
                 "order": [[0, 'desc'], [1, 'desc'], [2, 'desc'], [3, 'desc']],
                 "lengthMenu": [[10, 15, 25, 50, 100, -1], [10, 15, 25, 50, 100, "All"]],
-                scrollX: true
+                scrollX: true,
+                bSort: true,
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+
+                        "extend": 'excel',
+                        title: "Member Data",
+                        header: true,
+                        filename: function () {
+                            return 'Member Master Data';
+                        },
+                        exportOptions: {
+                            columns: ':gt(1)'
+                        }
+                    },
+                    {
+
+                        "extend": 'pdf',
+                        title: "Member Data",
+                        orientation: 'landscape',
+                        pageSize: 'A4',
+                        header: true,
+                        filename: function () {
+                            return 'Sangh Master Data';
+                        },
+                        exportOptions: {
+                            columns: ':gt(1)'
+                        }
+
+                    },
+                ],
+
             });
         }
     </script>

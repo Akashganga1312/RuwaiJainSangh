@@ -173,6 +173,7 @@ namespace JainSanghInformation
             }
             catch (Exception exception)
             {
+                Library.WriteErrorLog("Update of Sangh master Error = " + exception.ToString());
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "script", "alert('Error in Updated!');" + exception.Message, true);
             }
         }

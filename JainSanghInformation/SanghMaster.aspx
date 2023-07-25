@@ -402,7 +402,42 @@
                 select: true,
                 "order": [[0, 'desc'], [1, 'desc'], [2, 'desc'], [3, 'desc']],
                 "lengthMenu": [[10, 15, 25, 50, 100, -1], [10, 15, 25, 50, 100, "All"]],
-                scrollX: true
+                scrollX: true,
+                bSort: true,
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+
+                        "extend": 'excel',
+                        title: "Sangh Data",
+                        header: true,
+                        filename: function () {
+                            return 'Sangh Master Data';
+                        },
+                        exportOptions: {
+                            columns: ':gt(1)'
+                        }
+                    },
+                    {
+                        "extend": 'pdf',
+                        title: "Sangh Data",
+                        orientation: 'landscape',
+                        pageSize: 'A4',
+                        customize: function (doc) {
+                            doc.content[1].table.widths =
+                                Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+                        },
+                        header: true,
+                        filename: function () {
+                            return 'Sangh Master Data';
+                        },
+                        exportOptions: {
+                            columns: ':gt(1)'
+                        }
+
+                    },
+                ],
+
             });
         }
     </script>

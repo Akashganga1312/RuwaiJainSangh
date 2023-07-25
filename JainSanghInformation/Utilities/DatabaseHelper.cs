@@ -37,7 +37,7 @@ namespace JainSanghInformation.Utilities
             }
             catch (Exception e)
             {
-
+                Library.WriteErrorLog("deleteDataFromSanghMaster = " + e.ToString());
                 return false;
             }
         }
@@ -63,11 +63,12 @@ namespace JainSanghInformation.Utilities
             }
             catch (SqlException sql)
             {
-
+                Library.WriteErrorLog("deleteDataFromMemberMaster = " + sql.ToString());
                 return false;
             }
             catch (Exception e)
             {
+                Library.WriteErrorLog("deleteDataFromMemberMaster = " + e.ToString());
                 return false;
             }
         }
@@ -92,7 +93,7 @@ namespace JainSanghInformation.Utilities
             }
             catch (Exception e)
             {
-
+                Library.WriteErrorLog("InsertDataInMemberMaster = " + e.ToString());
                 return false;
             }
         }

@@ -67,7 +67,7 @@ namespace JainSanghInformation
         private void BindGridview()
         {
             GridView2.Visible = false;
-            string query = "SELECT MM.AutoId,concat(SM.SanghName,'-',SM.Location) [Sangh Name],VillageName [Village Name],(select MemberName From MemberMaster where AutoId = Case when MM.ParentRelationId IS NULL and MM.MemberType = 'Self' then MM.AutoId else MM.ParentRelationId end) as [Relation With],MemberName [Member Name],MemberType [Member Type],Format(Birthdate,'dd/MM/yyyy') [DOB],Education,MarriageStatus [Marriage Status],Occupation,Address,MobileNumber1 [Primary Mobile],MobileNumber2 [Secondary Mobile],BloodGroup FROM MemberMaster MM, SanghMaster SM where MM.IsDelete=0 and SM.AutoId = MM.SanghMasterId order by ParentRelationId,AutoId";
+            string query = "SELECT MM.AutoId,concat(SM.SanghName,'-',SM.Location) [Sangh Name],VillageName [Native Place],(select MemberName From MemberMaster where AutoId = Case when MM.ParentRelationId IS NULL and MM.MemberType = 'Self' then MM.AutoId else MM.ParentRelationId end) as [Relation With],MemberName [Member Name],MemberType [Member Type],Format(Birthdate,'dd/MM/yyyy') [DOB],Education,MarriageStatus [Marriage Status],Occupation,Address,MobileNumber1 [Primary Mobile],MobileNumber2 [Secondary Mobile],BloodGroup FROM MemberMaster MM, SanghMaster SM where MM.IsDelete=0 and SM.AutoId = MM.SanghMasterId order by ParentRelationId,AutoId";
 
             var table = new DataTable();
 
@@ -129,7 +129,7 @@ namespace JainSanghInformation
             {
                 int autoIdIndex = GetColumnIndexByName(GridView2, "AutoId");
                 int sanghNameIndex = GetColumnIndexByName(GridView2, "Sangh Name");
-                int villageNameIndex = GetColumnIndexByName(GridView2, "Village Name");
+                int villageNameIndex = GetColumnIndexByName(GridView2, "Native Place");
                 int memberNameIndex = GetColumnIndexByName(GridView2, "Member Name");
                 int memberTypeIndex = GetColumnIndexByName(GridView2, "Member Type");
                 int dobIndex = GetColumnIndexByName(GridView2, "DOB");
@@ -307,6 +307,7 @@ namespace JainSanghInformation
             }
             catch (Exception ex)
             {
+                Library.WriteErrorLog("Update of Edit Member Error using sp_insertDataMemberMaster = " + ex.ToString());
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "script", "alert('Failed = " + ex.Message + "!')", true);
 
                 BindGridview();

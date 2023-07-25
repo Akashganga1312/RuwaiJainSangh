@@ -26,14 +26,16 @@
 
                             <h4 class="menu-title text-center" style="font-size: 30px; font-family: 'Rasa', serif !important;">શ્રી ભરૂચ જિલ્લા લાડુઆ/લાડ શ્રીમાળી જૈન સંઘ
                             </h4>
+                            <h4 class="menu-title text-center" style="font-size: 30px; font-family: 'Rasa', serif !important;">સ્નેહ મિલન ૨૦૨૪
+                            </h4>
                             <%-- <h1 class="menu-title text-center">Log In to continue..</h1>--%>
                             <%-- <h6 class="font-weight-light">LogIn to continue..</h6>--%>
                             <form class="pt-3" runat="server">
                                 <div class="form-group">
-                                    <asp:TextBox ID="username" runat="server" class="form-control form-control-lg" placeholder="Username" Style="color: dimgray;" value="1"></asp:TextBox>
+                                    <asp:TextBox ID="username" runat="server" class="form-control form-control-lg" placeholder="Username" Style="color: dimgray;"></asp:TextBox>
                                 </div>
                                 <div class="form-group">
-                                    <asp:TextBox ID="password" type="password" runat="server" class="form-control form-control-lg" placeholder="Password" Value="123" Style="color: dimgray;"></asp:TextBox>
+                                    <asp:TextBox ID="password" type="password" runat="server" class="form-control form-control-lg" placeholder="Password" Style="color: dimgray;"></asp:TextBox>
                                 </div>
                                 <div class="mt-3">
                                     <asp:Button ID="Button1" runat="server" Text="LOG IN" class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn" OnClick="Login" />

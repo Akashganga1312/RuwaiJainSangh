@@ -112,9 +112,9 @@
                                     </div>
                                      <div class="col-md-4">
                                         <div class="form-group row">
-                                            <label class="col-sm-3 col-form-label">Village Name</label>
+                                            <label class="col-sm-3 col-form-label">Native Place</label>
                                             <div class="col-sm-7">
-                                                <asp:TextBox type="text" ID="txtvillagename" runat="server" class="form-control" placeholder="Enter Village Name" autocomplete="off"></asp:TextBox>
+                                                <asp:TextBox type="text" ID="txtvillagename" runat="server" class="form-control" placeholder="Enter Native Name" autocomplete="off"></asp:TextBox>
                                             </div>
                                         </div>
                                     </div>
@@ -201,7 +201,8 @@
     </script>
     
     <script type="text/javascript">
-        $(document).ready(function () {            $("#divForMemberNameOfParent").hide();
+        $(document).ready(function () {
+            $("#divForMemberNameOfParent").hide();
         });
     </script>
 </asp:Content>

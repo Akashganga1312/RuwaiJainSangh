@@ -152,6 +152,7 @@ namespace JainSanghInformation
             catch (Exception ex)
             {
                 Failed++;
+                Library.WriteErrorLog("Insert Data of Member Error = " + ex.ToString());
                 //ScriptManager.RegisterStartupScript(this, this.GetType(), "script", "alert('Failed = " + Failed + "!')", true); //Successs Data
             }
 
@@ -251,7 +252,7 @@ namespace JainSanghInformation
                     string education = row["Education"].ToString().Trim();
                     string marriageStatus = row["MarriageStatus"].ToString().Trim();
                     string occupation = row["Occupation"].ToString().Trim();
-                    string villageName = row["VillageName"].ToString().Trim();
+                    string villageName = row["NativePlace"].ToString().Trim();
                     string address = row["Address"].ToString().Trim();
                     string mobileNumberPrimary = row["MobileNumberPrimary"].ToString().Trim();
                     string mobileNumberSecondary = row["MobileNumberSecondary"].ToString().Trim();
@@ -282,14 +283,14 @@ namespace JainSanghInformation
                     else
                     {
                         failedRowOFinsertion++;
-                        ScriptManager.RegisterStartupScript(this, this.GetType(), "script", "alert('Failed Insertion of Record!');", true);
                     }
                 }
                 excelReader.Dispose();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
                 failedRowOFinsertion ++;
+                Library.WriteErrorLog("Upload File Of Member Error = " + ex.ToString());
             }
             var stringOfSuccess = "alert('" + "Total data = " + totalrows + " Successfully Affected or Inserted = " + insertRowOrAffectedRow + " Failed record of = " + failedRowOFinsertion + "');";
             ScriptManager.RegisterStartupScript(this, this.GetType(), "script", stringOfSuccess, true);
