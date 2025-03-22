@@ -14,17 +14,30 @@ namespace JainSanghInformation
         {
             UserType = Convert.ToInt32(Session["usertype"].ToString());
             UserId = Session["usrid"].ToString();
+            if (UserType != 1)
+            {
+                logout(sender, e);
+            }
             if (!this.IsPostBack)
             {
                 
             }
         }
 
+        protected void logout(object sender, EventArgs e)
+        {
+            Session.Clear();
+            Session.Abandon();
+            Session.RemoveAll();
+            UserType = 0;
+            UserId = string.Empty;
+            Response.Redirect("Default.aspx");
+        }
+
         protected void btninsert_Click(object sender, EventArgs e)
         {
             try
             {
-
                 SqlConnection con = new SqlConnection(connectionString);
                 SqlCommand cmd = new SqlCommand("insert into SanghMaster(SanghName,Location,PresidentName,PresidentMobile,CreatedBy)  values  (@SanghName,@Location,Case when @PresidentName='' then Null else @PresidentName End,Case when @PresidentMobile='' then Null else @PresidentMobile End,@CreatedBy)", con);
                 cmd.Parameters.AddWithValue("@SanghName", txtsname.Text);
@@ -35,14 +48,16 @@ namespace JainSanghInformation
                 con.Open();
                 cmd.ExecuteNonQuery();
                 con.Close();
-                //MessageBox.Show("Record Inserted!","Insert Responce", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                ScriptManager.RegisterStartupScript(this, this.GetType(), "script", "alert('Successfully Inserted!');", true);
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "ShowSuccessNotification",
+                        "showSuccessNotification('Sangh insert successful!');", true);
                 clearAllField();
             }
             catch (Exception ex)
             {
-                Library.WriteErrorLog("Insert of sangh Master Error = " + ex.ToString());
-                //MessageBox.Show("Insertion of record failed. Please try again");
+                var stringMessage = ex.Message;
+                stringMessage = stringMessage.Replace("'", "").Replace("\"", "");
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "ShowErrorNotification",
+$"showErrorNotification('An error occurred: {stringMessage}');", true);
             }
         }
 

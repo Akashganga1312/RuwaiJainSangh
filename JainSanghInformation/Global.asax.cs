@@ -23,13 +23,11 @@ namespace CBT
                 if (Session["usertype"].ToString() == "1")
                 {
                     //Redirect to Welcome Page if Session is not null    
-                    Response.Redirect("SanghMaster.aspx");
                 }
 
                 else if (Session["usertype"].ToString() == "2")
                 {
                     //Redirect to Welcome Page if Session is not null    
-                    Response.Redirect("SanghMaster.aspx");
                 }
             }
 
@@ -41,7 +39,6 @@ namespace CBT
             else
             {
                 //Redirect to Login Page if Session is null & Expires     
-                Response.Redirect("LogIn.aspx");
             }
         }
 

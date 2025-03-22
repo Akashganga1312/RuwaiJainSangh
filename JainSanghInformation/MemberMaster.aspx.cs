@@ -18,14 +18,28 @@ namespace JainSanghInformation
     public partial class MemberMaster : System.Web.UI.Page
     {
         public int UserType;
+        public string AutoId;
         public string UserId;
         public string ParentMemberId;
         string connectionString = ConfigurationManager.ConnectionStrings["JSI"].ConnectionString;
         protected void Page_Load(object sender, EventArgs e)
         {
-            UserType = Convert.ToInt32(Session["usertype"].ToString());
-            UserId = Session["usrid"].ToString();
+            try
+            {
+                UserType = Convert.ToInt32(Session["usertype"].ToString());
+                UserId = Session["usrid"].ToString();
+                AutoId = Session["autoid"].ToString();
+            }
+            catch (Exception ex)
+            {
+                logout(sender, e);
+            }
 
+            if (UserType == 2)
+            {
+                maindiv.Visible = false;
+                BindGridviewForUserType2();
+            }
             if (!this.IsPostBack)
             {
                 dropDownMemberType();
@@ -33,6 +47,17 @@ namespace JainSanghInformation
                 combobox();
                 BindGridview();
             }
+            //BindGridview();
+        }
+
+        protected void logout(object sender, EventArgs e)
+        {
+            Session.Clear();
+            Session.Abandon();
+            Session.RemoveAll();
+            UserType = 0;
+            UserId = string.Empty;
+            Response.Redirect("LogIn.aspx");
         }
         private void dropDownMemberType()
         {
@@ -67,18 +92,40 @@ namespace JainSanghInformation
         private void BindGridview()
         {
             GridView2.Visible = false;
-            string query = "SELECT MM.AutoId,concat(SM.SanghName,'-',SM.Location) [Sangh Name],VillageName [Native Place],(select MemberName From MemberMaster where AutoId = Case when MM.ParentRelationId IS NULL and MM.MemberType = 'Self' then MM.AutoId else MM.ParentRelationId end) as [Relation With],MemberName [Member Name],MemberType [Member Type],Format(Birthdate,'dd/MM/yyyy') [DOB],Education,MarriageStatus [Marriage Status],Occupation,Address,MobileNumber1 [Primary Mobile],MobileNumber2 [Secondary Mobile],BloodGroup FROM MemberMaster MM, SanghMaster SM where MM.IsDelete=0 and SM.AutoId = MM.SanghMasterId order by ParentRelationId,AutoId";
-
             var table = new DataTable();
 
+            object dbUserId;
+            if (string.IsNullOrEmpty(UserId))
+            {
+                dbUserId = DBNull.Value;
+            }
+            else
+            {
+                dbUserId = UserId;
+            }
+            object dbUserType;
+            if (UserType == 0)
+            {
+                dbUserType = DBNull.Value;
+            }
+            else
+            {
+                dbUserType = UserType;
+            }
             using (var connection = new SqlConnection(connectionString))
             {
-                using (var command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand("sp_GetMemberData", connection))
                 {
-                    using (var a = new SqlDataAdapter(command))
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    command.Parameters.AddWithValue("@UserId", dbUserId);
+                    command.Parameters.AddWithValue("@UserType_Id", dbUserType);
+                    command.Parameters.AddWithValue("@AutoId", AutoId);
+
+                    using (var adapter = new SqlDataAdapter(command))
                     {
                         connection.Open();
-                        a.Fill(table);
+                        adapter.Fill(table);
                         connection.Close();
                     }
                 }
@@ -92,7 +139,6 @@ namespace JainSanghInformation
                 GridView2.HeaderRow.TableSection = TableRowSection.TableHeader;
             }
             GridView2.Visible = true;
-
         }
 
         [System.Web.Services.WebMethod]
@@ -131,7 +177,7 @@ namespace JainSanghInformation
                 int sanghNameIndex = GetColumnIndexByName(GridView2, "Sangh Name");
                 int villageNameIndex = GetColumnIndexByName(GridView2, "Native Place");
                 int memberNameIndex = GetColumnIndexByName(GridView2, "Member Name");
-                int memberTypeIndex = GetColumnIndexByName(GridView2, "Member Type");
+                int memberTypeIndex = GetColumnIndexByName(GridView2, "Relation with Family Head");
                 int dobIndex = GetColumnIndexByName(GridView2, "DOB");
                 int educationIndex = GetColumnIndexByName(GridView2, "Education");
                 int marriageStatusIndex = GetColumnIndexByName(GridView2, "Marriage Status");
@@ -140,12 +186,13 @@ namespace JainSanghInformation
                 int primaryMobileIndex = GetColumnIndexByName(GridView2, "Primary Mobile");
                 int secondaryMobileIndex = GetColumnIndexByName(GridView2, "Secondary Mobile");
                 int bloodGroupIndex = GetColumnIndexByName(GridView2, "BloodGroup");
-                int relationWithIndex = GetColumnIndexByName(GridView2, "Relation With");
-
+                int relationWithIndex = GetColumnIndexByName(GridView2, "Family Head");
+                int gender = GetColumnIndexByName(GridView2, "Gender");
+                int email = GetColumnIndexByName(GridView2, "Email");
+                int occupationAddress = GetColumnIndexByName(GridView2, "OccupationAddress");
                 int rowIndex = Convert.ToInt32(e.CommandArgument);
                 GridViewRow row = GridView2.Rows[rowIndex];
                 clearSelectionOfDropdown();
-                // And you respective cell's value
                 if (HttpUtility.HtmlDecode(row.Cells[sanghNameIndex].Text).Trim() != "")
                 {
                     ddlsangh.SelectedValue = HttpUtility.HtmlDecode(row.Cells[sanghNameIndex].Text);
@@ -153,7 +200,6 @@ namespace JainSanghInformation
                 txtvillagename.Text = HttpUtility.HtmlDecode(row.Cells[villageNameIndex].Text);
                 txtmembername.Text = HttpUtility.HtmlDecode(row.Cells[memberNameIndex].Text);
                 var nameOfMemberType = HttpUtility.HtmlDecode(row.Cells[memberTypeIndex].Text).Trim();
-
                 if (HttpUtility.HtmlDecode(row.Cells[memberTypeIndex].Text).Trim() != "")
                 {
                     DropDownListMemberType.SelectedItem.Text = HttpUtility.HtmlDecode(row.Cells[memberTypeIndex].Text);
@@ -167,15 +213,15 @@ namespace JainSanghInformation
                     }
                 }
                 txtbdate.Text = row.Cells[dobIndex].Text;
-
                 if (HttpUtility.HtmlDecode(row.Cells[dobIndex].Text).Trim() != "")
                 {
                     txtbdate.Text = DateTime.Parse(row.Cells[dobIndex].Text).ToString("yyyy-MM-dd");
                 }
-
                 txteducation.Text = HttpUtility.HtmlDecode(row.Cells[educationIndex].Text);
                 txtmarriagestatus.Text = HttpUtility.HtmlDecode(row.Cells[marriageStatusIndex].Text);
+                txtOccupationAddress.InnerText = HttpUtility.HtmlDecode(row.Cells[occupationAddress].Text);
                 txtoccupation.Text = HttpUtility.HtmlDecode(row.Cells[occupationIndex].Text);
+                txtEmailAddress.Text = HttpUtility.HtmlDecode(row.Cells[email].Text);
                 txtaddress.InnerText = HttpUtility.HtmlDecode(row.Cells[addressIndex].Text);
                 textBoxMobileNumber1.Text = HttpUtility.HtmlDecode(row.Cells[primaryMobileIndex].Text);
                 textBoxMobileNumber2.Text = HttpUtility.HtmlDecode(row.Cells[secondaryMobileIndex].Text);
@@ -188,6 +234,10 @@ namespace JainSanghInformation
                 {
                     DropDownListParentMember.SelectedItem.Text = HttpUtility.HtmlDecode(row.Cells[relationWithIndex].Text);
                 }
+                if (HttpUtility.HtmlDecode(row.Cells[gender].Text).Trim() != "")
+                {
+                    ddlGender.SelectedValue = HttpUtility.HtmlDecode(row.Cells[gender].Text);
+                }
                 foreach (ListItem item in DropDownListParentMember.Items)
                 {
                     if (item.Value == HttpUtility.HtmlDecode(row.Cells[relationWithIndex].Text))
@@ -196,28 +246,12 @@ namespace JainSanghInformation
                         break;
                     }
                 }
-                //TODO check If 
-               
-              
                 string isItRalatedOrNot =  GetValueHelperFromDatabase.GetRateForProduct(HttpUtility.HtmlDecode(row.Cells[autoIdIndex].Text), GetValueHelperFromDatabase.queryForGetValueOfRelation);
-                /*
-                else
-                {
-                    divForMemberNameOfParent.Visible = true;
-                    if (DropDownListMemberType.SelectedItem.ToString() == "Self")
-                    {
-                        divForMemberNameOfParent.Visible = false;
-                    }
-                   
-                }*/
                 ScriptManager.RegisterStartupScript(this, GetType(), "CallHandleDropDownChange", "handleDropDownChange();", true);
                 if (DropDownListMemberType.SelectedItem.ToString() == "Self" && isItRalatedOrNot == "1")
                 {
                     DropDownListMemberType.Enabled = false;
                 }
-
-
-
                 Popup(true);
             }
         }
@@ -234,8 +268,7 @@ namespace JainSanghInformation
                     }
                 }
             }
-
-            return -1; // Column with the specified name not found
+            return -1; 
         }
 
         void Popup(bool isDisplay)
@@ -261,13 +294,10 @@ namespace JainSanghInformation
 
         protected void btnUpdate_Click(object sender, EventArgs e)
         {
-
             try
             {
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
-
-                    // Create a SqlCommand object to call the stored procedure
                     using (SqlCommand cmd = new SqlCommand("sp_insertDataMemberMaster", connection))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
@@ -286,9 +316,12 @@ namespace JainSanghInformation
                         cmd.Parameters.AddWithValue("@MemberName", txtmembername.Text);
                         cmd.Parameters.AddWithValue("@MemberType", DropDownListMemberType.SelectedItem.ToString());
                         cmd.Parameters.AddWithValue("@Birthdate", txtbdate.Text);
+                        cmd.Parameters.AddWithValue("@Gender", ddlGender.SelectedValue.ToString());
                         cmd.Parameters.AddWithValue("@Education", txteducation.Text);
+                        cmd.Parameters.AddWithValue("@Email", txtEmailAddress.Text);
                         cmd.Parameters.AddWithValue("@MarriageStatus", txtmarriagestatus.Text);
                         cmd.Parameters.AddWithValue("@Occupation", txtoccupation.Text);
+                        cmd.Parameters.AddWithValue("@OccupationAddress", txtOccupationAddress.InnerText);
                         cmd.Parameters.AddWithValue("@Address", txtaddress.InnerText);
                         cmd.Parameters.AddWithValue("@MobileNumber1", textBoxMobileNumber1.Text);
                         cmd.Parameters.AddWithValue("@MobileNumber2", textBoxMobileNumber2.Text);
@@ -301,36 +334,73 @@ namespace JainSanghInformation
                         connection.Open();
                         cmd.ExecuteNonQuery();
                         connection.Close();
+                        ScriptManager.RegisterStartupScript(this, this.GetType(), "ShowSuccessNotification",
+                      "showSuccessNotification('Member update successful!');", true);
+                        BindGridview();
                     }
                 }
-                BindGridview();
             }
             catch (Exception ex)
             {
                 Library.WriteErrorLog("Update of Edit Member Error using sp_insertDataMemberMaster = " + ex.ToString());
-                ScriptManager.RegisterStartupScript(this, this.GetType(), "script", "alert('Failed = " + ex.Message + "!')", true);
-
+                var stringMessage = ex.Message;
+                stringMessage = stringMessage.Replace("'", "").Replace("\"", "");
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "ShowErrorNotification",
+$"showErrorNotification('An error occurred: {stringMessage}');", true);
                 BindGridview();
             }
 
+        }
 
+
+        private void BindGridviewForUserType2()
+        {
+            if (UserType != 2) return;
+
+            var table = new DataTable();
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                using (var command = new SqlCommand("sp_GetMemberDataForUserType2", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    using (var adapter = new SqlDataAdapter(command))
+                    {
+                        connection.Open();
+                        adapter.Fill(table);
+                        connection.Close();
+                    }
+                }
+            }
+
+            GridViewUserType2.DataSource = table;
+            GridViewUserType2.DataBind();
+            GridViewUserType2.UseAccessibleHeader = true;
+
+            if (GridViewUserType2.Rows.Count > 0)
+            {
+                GridViewUserType2.HeaderRow.TableSection = TableRowSection.TableHeader;
+            }
         }
 
         protected void DropDownListMemberType_SelectedIndexChanged(object sender, EventArgs e)
         {
             string selectedValue = DropDownListMemberType.SelectedValue;
 
-            // Perform actions based on the selected value
             if (selectedValue == "Husband")
             {
-                // Code to show the div or perform other actions when "Husband" is selected
                 divForMemberNameOfParent.Visible = true;
             }
             else
             {
-                // Code to hide the div or perform other actions for other selections
                 divForMemberNameOfParent.Visible = false;
             }
+        }
+
+        protected void GridView2_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            StringBuilder builder = new StringBuilder();
         }
     }
 }

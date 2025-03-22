@@ -78,6 +78,15 @@ namespace JainSanghInformation
         protected global::System.Web.UI.WebControls.TextBox txtmembername;
 
         /// <summary>
+        /// ddlGender control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlGender;
+
+        /// <summary>
         /// txtbdate control.
         /// </summary>
         /// <remarks>
@@ -85,6 +94,15 @@ namespace JainSanghInformation
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtbdate;
+
+        /// <summary>
+        /// txtEmailAddress control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtEmailAddress;
 
         /// <summary>
         /// txteducation control.
@@ -112,6 +130,15 @@ namespace JainSanghInformation
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtoccupation;
+
+        /// <summary>
+        /// txtOccupationAddress control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlTextArea txtOccupationAddress;
 
         /// <summary>
         /// txtvillagename control.

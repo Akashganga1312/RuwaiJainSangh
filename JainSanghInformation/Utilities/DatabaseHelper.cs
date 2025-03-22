@@ -13,6 +13,8 @@ namespace JainSanghInformation.Utilities
         private static readonly string connectionString = ConfigurationManager.ConnectionStrings["JSI"].ConnectionString;
         private static readonly string deleteDataInSangh_Master = "sp_SanghDelete";
         private static readonly string deleteDataInMember_Master = "sp_MemberMaster_Delete";
+        private static readonly string deleteDataInMainMenu_Master = "sp_MainMenuMaster_Delete";
+        private static readonly string deleteDataInSubMenu_Master = "sp_SubMenuMaster_Delete";
         private static readonly string insertDataInMemberMaster = "sp_insertDataMemberMaster";
 
 
@@ -41,6 +43,60 @@ namespace JainSanghInformation.Utilities
                 return false;
             }
         }
+
+
+        public static bool deleteDataFromMainMenuMaster(SqlParameter[] parameters)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    SqlCommand command = new SqlCommand(deleteDataInMainMenu_Master, connection);
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    if (parameters != null)
+                    {
+                        command.Parameters.AddRange(parameters);
+                    }
+
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                Library.WriteErrorLog("deleteDataFromSanghMaster = " + e.ToString());
+                return false;
+            }
+        }
+
+        public static bool deleteDataFromSubMenuMaster(SqlParameter[] parameters)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    SqlCommand command = new SqlCommand(deleteDataInSubMenu_Master, connection);
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    if (parameters != null)
+                    {
+                        command.Parameters.AddRange(parameters);
+                    }
+
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                Library.WriteErrorLog("deleteDataFromSanghMaster = " + e.ToString());
+                return false;
+            }
+        }
+
 
         public static bool deleteDataFromMemberMaster(SqlParameter[] parameters)
         {

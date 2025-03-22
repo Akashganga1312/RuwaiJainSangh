@@ -20,15 +20,32 @@ namespace JainSanghInformation
         string connectionString = ConfigurationManager.ConnectionStrings["JSI"].ConnectionString;
         protected void Page_Load(object sender, EventArgs e)
         {
-            UserType = Convert.ToInt32(Session["usertype"].ToString());
-            UserId = Session["usrid"].ToString();
-
+            try { 
+                UserType = Convert.ToInt32(Session["usertype"].ToString());
+                UserId = Session["usrid"].ToString();
+                if (UserType != 1)
+                {
+                    logout(sender, e);
+                }
+            }
+            catch(Exception ex){
+                logout(sender, e);
+            } 
             if (!this.IsPostBack)
             {
                 BindGridview();
             }
         }
 
+        protected void logout(object sender, EventArgs e)
+        {
+            Session.Clear();
+            Session.Abandon();
+            Session.RemoveAll();
+            UserType = 0;
+            UserId = string.Empty;
+            Response.Redirect("Default.aspx");
+        }
         private void BindGridview()
         {
             GridView2.Visible = false;
@@ -139,17 +156,20 @@ namespace JainSanghInformation
             {
                 if (txtsname.Text.Trim() == "" && txtlocn.Text.Trim() == "")
                 {
-                    ScriptManager.RegisterStartupScript(this, this.GetType(), "script", "alert('Please enter SanghName and Location!');", true);
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "showErrorNotification",
+"showErrorNotification('Please enter SanghName and Location!');", true);
 
                 }
                 else if (txtsname.Text.Trim() == "")
                 {
-                    ScriptManager.RegisterStartupScript(this, this.GetType(), "script", "alert('Please enter SanghName!');", true);
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "showErrorNotification",
+"showErrorNotification('Please enter Sangh Name!');", true);
 
                 }
                 else if (txtlocn.Text.Trim() == "")
                 {
-                    ScriptManager.RegisterStartupScript(this, this.GetType(), "script", "alert('Please enter Location!');", true);
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "showErrorNotification",
+"showErrorNotification('Please enter Location!');", true);
                 }
                 else
                 {
@@ -160,12 +180,12 @@ namespace JainSanghInformation
                     cmd.Parameters.AddWithValue("@Location", txtlocn.Text);
                     cmd.Parameters.AddWithValue("@PresidentName", txtpname.Text);
                     cmd.Parameters.AddWithValue("@PresidentMobile", txtpmob.Text);
-
                     con.Open();
                     cmd.ExecuteNonQuery();
                     con.Close();
                     //MessageBox.Show("Record Inserted!","Insert Responce", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    ScriptManager.RegisterStartupScript(this, this.GetType(), "script", "alert('Successfully Updated!');", true);
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "ShowSuccessNotification",
+                        "showSuccessNotification('Sangh successfully updated!');", true);
                     BindGridview();
                 }
               
@@ -174,7 +194,10 @@ namespace JainSanghInformation
             catch (Exception exception)
             {
                 Library.WriteErrorLog("Update of Sangh master Error = " + exception.ToString());
-                ScriptManager.RegisterStartupScript(this, this.GetType(), "script", "alert('Error in Updated!');" + exception.Message, true);
+                var stringMessage = exception.Message;
+                stringMessage = stringMessage.Replace("'", "").Replace("\"", "");
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "ShowErrorNotification",
+$"showErrorNotification('An error occurred: {stringMessage}');", true);
             }
         }
 

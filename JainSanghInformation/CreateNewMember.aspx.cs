@@ -1,4 +1,5 @@
-﻿using ExcelDataReader;
+﻿using ClosedXML.Excel;
+using ExcelDataReader;
 using JainSanghInformation.Utilities;
 using System;
 using System.Collections.Generic;
@@ -35,6 +36,9 @@ namespace JainSanghInformation
         public string MobileNumber1;
         public string MobileNumber2;
         public string BloodGroup;
+        public string Gender;
+        public string Email;
+        public string OccupationAddress;
         public int totalrows = 0;
         public int Success = 0;
         public int Failed = 0;
@@ -44,6 +48,10 @@ namespace JainSanghInformation
         {
             UserType = Convert.ToInt32(Session["usertype"].ToString());
             UserId = Session["usrid"].ToString();
+            if (UserType != 1)
+            {
+                logout(sender, e);
+            }
             if (!this.IsPostBack)
             {
                 dropDownMemberType();
@@ -82,6 +90,16 @@ namespace JainSanghInformation
             }
         }
 
+        protected void logout(object sender, EventArgs e)
+        {
+            Session.Clear();
+            Session.Abandon();
+            Session.RemoveAll();
+            UserType = 0;
+            UserId = string.Empty;
+            Response.Redirect("Default.aspx");
+        }
+
         public void insetupdatedata()
         {
 
@@ -110,17 +128,24 @@ namespace JainSanghInformation
                             MobileNumber1 = textBoxMobileNumber1.Text;
                             MobileNumber2 = textBoxMobileNumber2.Text;
                             BloodGroup = ddlbloodgrup.Text;
+                            Gender = ddlGender.Text;
+                            OccupationAddress = txtOccupationAddress.InnerText;
+                            Email = txtEmailAddress.Text;
                             if (BloodGroup.Contains("--"))
                             {
                                 BloodGroup = string.Empty;
                             }
+                            if (Gender.Contains("--"))
+                            {
+                                Gender = string.Empty;
+                            }
+
 
                         }
                         if (!MemberType.Equals("Self"))
                         {
                             ParentMemberId = DropDownListParentMember.SelectedItem.ToString();
                         }
-
 
                         command.Parameters.AddWithValue("@SanghName", sanghname);
                         command.Parameters.AddWithValue("@VillageName", VillageName);
@@ -130,6 +155,9 @@ namespace JainSanghInformation
                         command.Parameters.AddWithValue("@Education", Education);
                         command.Parameters.AddWithValue("@MarriageStatus", MarriageStatus);
                         command.Parameters.AddWithValue("@Occupation", Occupation);
+                        command.Parameters.AddWithValue("@OccupationAddress", OccupationAddress);
+                        command.Parameters.AddWithValue("@Email", Email);
+                        command.Parameters.AddWithValue("@Gender", Gender);
                         command.Parameters.AddWithValue("@Address", Address);
                         command.Parameters.AddWithValue("@MobileNumber1", MobileNumber1);
                         command.Parameters.AddWithValue("@MobileNumber2", MobileNumber2);
@@ -139,12 +167,11 @@ namespace JainSanghInformation
                         {
                             command.Parameters.AddWithValue("@MemberNameParent", ParentMemberId);
                         }
-
                         connection.Open();
                         command.ExecuteNonQuery();
                         connection.Close();
                         Success++;
-                        ScriptManager.RegisterStartupScript(this, this.GetType(), "script", "alert('Successfully Inserted or Updated!');", true);
+                        ScriptManager.RegisterStartupScript(this, this.GetType(), "ShowSuccessNotification","showSuccessNotification('Successfully Inserted or Updated!');", true);
                         clearAllField();
                     }
                 }
@@ -153,7 +180,10 @@ namespace JainSanghInformation
             {
                 Failed++;
                 Library.WriteErrorLog("Insert Data of Member Error = " + ex.ToString());
-                //ScriptManager.RegisterStartupScript(this, this.GetType(), "script", "alert('Failed = " + Failed + "!')", true); //Successs Data
+                var stringMessage = ex.Message;
+                stringMessage = stringMessage.Replace("'", "").Replace("\"", "");
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "ShowErrorNotification",
+                $"showErrorNotification('An error occurred: {stringMessage}');", true);
             }
 
         }
@@ -189,37 +219,69 @@ namespace JainSanghInformation
             DropDownListMemberType.ClearSelection();
             ddlbloodgrup.ClearSelection();
             ddlsangh.ClearSelection();
+            txtOccupationAddress.InnerText = string.Empty;
+            txtaddress.InnerText = string.Empty;
+            ddlGender.ClearSelection();
         }
 
         protected void btnupload_Click(object sender, EventArgs e)
         {
             method = true;
+
             if (filupl.HasFile)
             {
-                if (filupl.HasFile && (Path.GetExtension(filupl.FileName) == ".xlsx" || Path.GetExtension(filupl.FileName) == ".xlx"))
+                string fileExtension = Path.GetExtension(filupl.FileName);
+                if (fileExtension == ".xlsx" || fileExtension == ".xlx")
                 {
                     string fileName = Path.GetFileName(filupl.FileName);
-                    string filePath = Server.MapPath("~/Uploads/") + fileName;
-
-                    // Save the uploaded Excel file to the server
+                    string uploadDir = Server.MapPath("~/Uploads/");
+                    if (!Directory.Exists(uploadDir))
+                    {
+                        Directory.CreateDirectory(uploadDir);
+                    }
+                    string filePath = Path.Combine(uploadDir, fileName);
                     filupl.SaveAs(filePath);
-
                     InsertDataFromExcel(filePath);
-
+                }
+                else
+                {
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "showErrorNotification",
+$"showErrorNotification('Only .xlsx and .xlx files are allowed.');", true);
                 }
             }
             else
             {
-
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "showErrorNotification",
+$"showErrorNotification('Please select a file to upload.');", true);
             }
         }
+
         private void InsertDataFromExcel(string filePath)
         {
             int insertRowOrAffectedRow = 0;
             int failedRowOFinsertion = 0;
             int totalrows = 0;
+            DataTable failedRecords = new DataTable();
             try
             {
+                failedRecords.Columns.Add("SanghName-SanghLocation*");
+                failedRecords.Columns.Add("MemberType*");
+                failedRecords.Columns.Add("ParentMemberName*");
+                failedRecords.Columns.Add("MemberName*");
+                failedRecords.Columns.Add("Birthdate");
+                failedRecords.Columns.Add("Education");
+                failedRecords.Columns.Add("MarriageStatus");
+                failedRecords.Columns.Add("Occupation");
+                failedRecords.Columns.Add("NativePlace");
+                failedRecords.Columns.Add("Address");
+                failedRecords.Columns.Add("Occupation Address");
+                failedRecords.Columns.Add("MobileNumberPrimary");
+                failedRecords.Columns.Add("MobileNumberSecondary");
+                failedRecords.Columns.Add("BloodGroup");
+                failedRecords.Columns.Add("Gender*");
+                failedRecords.Columns.Add("Email");
+                failedRecords.Columns.Add("ErrorReason");
+
                 string file = filePath;
                 FileStream stream = System.IO.File.Open(file, FileMode.Open, FileAccess.Read);
                 IExcelDataReader excelReader = ExcelReaderFactory.CreateOpenXmlReader(stream);
@@ -237,67 +299,135 @@ namespace JainSanghInformation
 
                 foreach (DataRow row in dt.Rows)
                 {
-                    string sanghName = row["SanghName-SanghLocation*"].ToString().Trim();
-                    string memberType = row["MemberType*"].ToString().Trim();
-                    string parentMemberName = row["ParentMemberName*"].ToString().Trim();
-                    string memberName = row["MemberName*"].ToString().Trim();
-                    string birthdate = row["Birthdate"].ToString().Trim();
-                    if (birthdate != "")
+                    try
                     {
-                        birthdate = Convert.ToDateTime(birthdate).ToString("yyyy-MM-dd");
-                    }
-                    else {
-                        birthdate = "1900-01-01";
-                    }
-                    string education = row["Education"].ToString().Trim();
-                    string marriageStatus = row["MarriageStatus"].ToString().Trim();
-                    string occupation = row["Occupation"].ToString().Trim();
-                    string villageName = row["NativePlace"].ToString().Trim();
-                    string address = row["Address"].ToString().Trim();
-                    string mobileNumberPrimary = row["MobileNumberPrimary"].ToString().Trim();
-                    string mobileNumberSecondary = row["MobileNumberSecondary"].ToString().Trim();
-                    string bloodGroup = row["BloodGroup"].ToString().Trim();
+                        string sanghName = row["SanghName-SanghLocation*"].ToString().Trim();
+                        string memberType = row["MemberType*"].ToString().Trim();
+                        string parentMemberName = row["ParentMemberName*"].ToString().Trim();
+                        string memberName = row["MemberName*"].ToString().Trim();
+                        string birthdate = row["Birthdate"].ToString().Trim();
+                        if (birthdate != "")
+                        {
+                            try { 
+                                birthdate = Convert.ToDateTime(birthdate).ToString("yyyy-MM-dd");
+                            }catch(Exception ex)
+                            {
 
-                    SqlParameter[] parameters = new SqlParameter[]
-                         {
-                                  new SqlParameter("@SanghName",sanghName),
-    new SqlParameter("@VillageName", villageName),
-    new SqlParameter("@MemberName", memberName),
-    new SqlParameter("@MemberNameParent", parentMemberName),
-    new SqlParameter("@MemberType", memberType),
-    new SqlParameter("@Birthdate", birthdate),
-    new SqlParameter("@Education", education),
-    new SqlParameter("@MarriageStatus", marriageStatus),
-    new SqlParameter("@Occupation", occupation),
-    new SqlParameter("@Address", address),
-    new SqlParameter("@MobileNumber1", mobileNumberPrimary),
-    new SqlParameter("@MobileNumber2", mobileNumberSecondary),
-    new SqlParameter("@BloodGroup",bloodGroup ),
-    new SqlParameter("@CreatedBy", UserId)
-                         };
-                    if (DatabaseHelper.InsertDataInMemberMaster(parameters))
-                    {
-                        insertRowOrAffectedRow++;
-                        clearAllField();
+                            }
+                        }
+                        else
+                        {
+                            birthdate = "1900-01-01";
+                        }
+                        string education = row["Education"].ToString().Trim();
+                        string marriageStatus = row["MarriageStatus"].ToString().Trim();
+                        string occupation = row["Occupation"].ToString().Trim();
+                        string villageName = row["NativePlace"].ToString().Trim();
+                        string address = row["Address"].ToString().Trim();
+                        string occupationAddress = row["Occupation Address"].ToString().Trim();
+                        string mobileNumberPrimary = row["MobileNumberPrimary"].ToString().Trim();
+                        string mobileNumberSecondary = row["MobileNumberSecondary"].ToString().Trim();
+                        string bloodGroup = row["BloodGroup"].ToString().Trim();
+                        string gender = row["Gender*"].ToString().Trim();
+                        string email = row["Email"].ToString().Trim();
+
+                        SqlParameter[] parameters = new SqlParameter[]
+                        {
+                    new SqlParameter("@SanghName",sanghName),
+                    new SqlParameter("@VillageName", villageName),
+                    new SqlParameter("@MemberName", memberName),
+                    new SqlParameter("@MemberNameParent", parentMemberName),
+                    new SqlParameter("@MemberType", memberType),
+                    new SqlParameter("@Birthdate", birthdate),
+                    new SqlParameter("@Education", education),
+                    new SqlParameter("@MarriageStatus", marriageStatus),
+                    new SqlParameter("@Occupation", occupation),
+                    new SqlParameter("@Address", address),
+                    new SqlParameter("@MobileNumber1", mobileNumberPrimary),
+                    new SqlParameter("@MobileNumber2", mobileNumberSecondary),
+                    new SqlParameter("@Email", email),
+                    new SqlParameter("@OccupationAddress", occupationAddress),
+                    new SqlParameter("@Gender", gender),
+                    new SqlParameter("@BloodGroup",bloodGroup ),
+                    new SqlParameter("@CreatedBy", UserId)
+                        };
+
+                        try
+                        {
+                            using (SqlConnection connection = new SqlConnection(connectionString))
+                            {
+                                SqlCommand command = new SqlCommand("sp_insertDataMemberMaster", connection);
+                                command.CommandType = CommandType.StoredProcedure;
+
+                                if (parameters != null)
+                                {
+                                    command.Parameters.AddRange(parameters);
+                                }
+
+                                connection.Open();
+                                command.ExecuteNonQuery();
+                                insertRowOrAffectedRow++;
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            failedRowOFinsertion++;
+                            AddFailedRecord(failedRecords, row, e.Message);
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
                         failedRowOFinsertion++;
+                        AddFailedRecord(failedRecords, row, ex.Message);
                     }
                 }
                 excelReader.Dispose();
             }
             catch (Exception ex)
             {
-                failedRowOFinsertion ++;
+                failedRowOFinsertion++;
                 Library.WriteErrorLog("Upload File Of Member Error = " + ex.ToString());
             }
-            var stringOfSuccess = "alert('" + "Total data = " + totalrows + " Successfully Affected or Inserted = " + insertRowOrAffectedRow + " Failed record of = " + failedRowOFinsertion + "');";
-            ScriptManager.RegisterStartupScript(this, this.GetType(), "script", stringOfSuccess, true);
 
+            string resultMessage = "Total data = " + totalrows + ", Successfully Affected or Inserted = " + insertRowOrAffectedRow + ", Failed record of = " + failedRowOFinsertion;
 
+            if (failedRowOFinsertion > 0)
+            {
+                string failedFilePath = Server.MapPath("~/Uploads/FailedRecords_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx");
+                ExportFailedRecordsToExcel(failedRecords, failedFilePath);
+
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "ShowInfoNotification",
+                    $"showInfoNotification('{resultMessage}. <a href=\"{failedFilePath}\" target=\"_blank\">Download Failed Records</a>');", true);
+            }
+            else
+            {
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "ShowInfoNotification",
+                    $"showInfoNotification('{resultMessage}');", true);
+            }
         }
 
 
+        private void AddFailedRecord(DataTable failedRecords, DataRow originalRow, string errorReason)
+        {
+            DataRow failedRow = failedRecords.NewRow();
+            foreach (DataColumn column in failedRecords.Columns)
+            {
+                if (originalRow.Table.Columns.Contains(column.ColumnName))
+                {
+                    failedRow[column.ColumnName] = originalRow[column.ColumnName];
+                }
+            }
+            failedRow["ErrorReason"] = errorReason;
+            failedRecords.Rows.Add(failedRow);
+        }
+
+        private void ExportFailedRecordsToExcel(DataTable dataTable, string filePath)
+        {
+            using (XLWorkbook workbook = new XLWorkbook())
+            {
+                workbook.Worksheets.Add(dataTable, "FailedRecords");
+                workbook.SaveAs(filePath);
+            }
+        }
     }
 }
